@@ -23,8 +23,9 @@ class AboutGameScreen extends StatelessWidget {
         ),
         child: SafeArea(
           child: Stack(
+            clipBehavior: Clip.none, // allow icons to overflow for depth
             children: [
-              // Floating background corner icons
+              // Floating corner icons
               _buildFloatingIcon(
                 FontAwesomeIcons.solidStar,
                 -60,
@@ -66,7 +67,7 @@ class AboutGameScreen extends StatelessWidget {
                 right: true,
               ),
 
-              // Main content scrollable
+              // Main content
               Center(
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(
@@ -76,25 +77,33 @@ class AboutGameScreen extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Bulb icon with subtle shadow for depth
+                      // Bulb icon with proper 3D depth
                       Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          // boxShadow: const [
-                          //   BoxShadow(
-                          //     color: Colors.black38,
-                          //     offset: Offset(0, 4),
-                          //     blurRadius: 12,
-                          //   ),
-                          // ],
-                        ),
-                        child: const FaIcon(
-                          FontAwesomeIcons.lightbulb,
-                          size: 80,
-                          color: Colors.white,
+                        margin: const EdgeInsets.only(bottom: 25),
+                        child: Stack(
+                          alignment: Alignment.center,
+                          clipBehavior: Clip.none,
+                          children: [
+                            // Shadow layers for 3D depth
+                            for (int i = 3; i >= 1; i--)
+                              Positioned(
+                                left: i.toDouble(),
+                                top: i.toDouble(),
+                                child: FaIcon(
+                                  FontAwesomeIcons.lightbulb,
+                                  size: 80,
+                                  color: Colors.black.withOpacity(0.1 * i),
+                                ),
+                              ),
+                            // Main icon
+                            const FaIcon(
+                              FontAwesomeIcons.lightbulb,
+                              size: 80,
+                              color: Colors.white,
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 25),
 
                       _buildTitle(),
                       const SizedBox(height: 30),
@@ -114,30 +123,58 @@ class AboutGameScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 40),
 
-                      // Got It! button
-                      SizedBox(
+                      // Lively "Got It!" button
+                      Container(
                         width: 200,
                         height: 55,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(35),
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFFD17A), Color(0xFFFFB74D)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black45,
+                              offset: Offset(0, 6),
+                              blurRadius: 12,
+                            ),
+                            BoxShadow(
+                              color: Colors.black26,
+                              offset: Offset(0, 3),
+                              blurRadius: 6,
+                            ),
+                          ],
+                        ),
                         child: ElevatedButton(
+                          onPressed: () => Navigator.pop(context),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFFD17A),
+                            elevation: 0,
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(35),
                             ),
-                            elevation: 12,
-                            shadowColor: Colors.black45,
                           ),
-                          onPressed: () => Navigator.pop(context),
                           child: Text(
                             'GOT IT!',
                             style: GoogleFonts.poppins(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
+                              shadows: const [
+                                Shadow(
+                                  color: Colors.black26,
+                                  offset: Offset(1, 1),
+                                  blurRadius: 2,
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 50),
                     ],
                   ),
